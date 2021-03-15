@@ -154,5 +154,4 @@ public class Player : MonoBehaviour
             particleDust.Play();
         }
     }
-
 }
