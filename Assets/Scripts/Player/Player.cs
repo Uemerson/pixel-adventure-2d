@@ -6,7 +6,6 @@ public class Player : MonoBehaviour
 {
     private float horizontalMove;
     private bool facingRight = true;
-    private Rigidbody2D rigidbody2D;
     private SpriteRenderer spriteRenderer;
     [SerializeField] private float runSpeed;
     private Animator animator;
@@ -26,6 +25,8 @@ public class Player : MonoBehaviour
     [SerializeField] private bool onLeftWall;
     [SerializeField] private bool onRightWall;
     [SerializeField] private bool wallSlide;
+    private bool onLeftSlide = false;
+    private bool onRightSlide = false;
 
     public bool onGround { get { return _onGround; } }
     public bool onWall { get { return _onWall; } }
@@ -43,7 +44,6 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rigidbody2D = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         extraJumps = extraJumpsValue;
@@ -71,7 +71,7 @@ public class Player : MonoBehaviour
 
         horizontalMove = Input.GetAxis("Horizontal");
 
-        falling = !_onGround && rigidbody2D.velocity.y < 0;
+        falling = !_onGround && GetComponent<Rigidbody2D>().velocity.y < 0;
 
         if (falling && !jumping)
             doubleJumping = false;
@@ -88,11 +88,22 @@ public class Player : MonoBehaviour
         if (_onGround && !jumping)
         {
             extraJumps = extraJumpsValue;
+            onLeftSlide = onRightSlide = false;
         }
 
         if (_onWall && !_onGround && falling)
         {
-            wallSlide = true;
+            if (onLeftWall && !onLeftSlide){
+                wallSlide = true;
+                extraJumps = 2;
+                onLeftSlide = true;
+                onRightSlide = false;
+            } else if (onRightWall && !onRightSlide) {
+                wallSlide = true;
+                extraJumps = 2;
+                onLeftSlide = false;
+                onRightSlide = true;
+            }
         }
 
         if ((_onWall && _onGround) || !_onWall)
@@ -105,21 +116,16 @@ public class Player : MonoBehaviour
         animator.SetBool("falling", falling);
         animator.SetBool("wallSlide", wallSlide);
         animator.SetBool("doubleJumping", doubleJumping);
-
-        if (_onWall && extraJumps <= 0)
-        {
-            extraJumps = 1;
-        }
     }
 
     void FixedUpdate()
     {
-        rigidbody2D.velocity = new Vector2(horizontalMove * runSpeed, rigidbody2D.velocity.y);
+        GetComponent<Rigidbody2D>().velocity = new Vector2(horizontalMove * runSpeed, GetComponent<Rigidbody2D>().velocity.y);
         
         //Wall Slide
         if (wallSlide)
         {
-            rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, -slidePower);
+            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, -slidePower);
             spriteRenderer.flipX = onRightWall ? false : true;
             facingRight = onRightWall ? true : false;
         }
@@ -128,15 +134,15 @@ public class Player : MonoBehaviour
         if (jumping)
         {
             particleDust.Play();
-            rigidbody2D.velocity = Vector2.up * jumpForce;
+            GetComponent<Rigidbody2D>().velocity = Vector2.up * jumpForce;
             jumping = false;
 
             if (_onWall && !_onGround)
             {
                 if (onRightWall) 
-                    rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x - 35, rigidbody2D.velocity.y);
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x - 35, GetComponent<Rigidbody2D>().velocity.y);
                 else if (onLeftWall)
-                    rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x + 35, rigidbody2D.velocity.y);                
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x + 35, GetComponent<Rigidbody2D>().velocity.y);                
             }
         }
 
