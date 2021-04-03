@@ -9,7 +9,8 @@ public class PlatformVertical : MonoBehaviour
     private float waitTime;
     private bool disablePlatform = false;
 
-    [SerializeField] private Player player;
+    public Player player { set { _player = value; } get { return _player; } }
+    private Player _player;
 
     // Start is called before the first frame update
     void Start()

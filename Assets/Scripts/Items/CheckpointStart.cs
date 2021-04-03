@@ -23,5 +23,7 @@ public class CheckpointStart : MonoBehaviour
         foreach (GameObject backgroundVertical in GameObject.FindGameObjectsWithTag("BackgroundVertical")) {
             backgroundVertical.GetComponent<BackgroundVertical>().player = GameObject.FindWithTag("Player");
         }
+
+        GameObject.FindWithTag("Tilemap_Platform").GetComponent<PlatformVertical>().player = GameObject.FindWithTag("Player").GetComponent<Player>();
     }
 }

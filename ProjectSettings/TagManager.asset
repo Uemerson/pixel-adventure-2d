@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Background
   - BackgroundVertical
+  - Tilemap_Platform
   layers:
   - Default
   - TransparentFX
